@@ -1,20 +1,7 @@
 #!/usr/bin/env bash
-# This script installs Nginx on Web-Sever-01
-
+# This script installs, configures, and starts the server
 sudo apt-get update
-sudo apt-get -y install nginx
-sudo ufw allow 'Nginx HTTP'
-
-# Ensure the correct content is in the index.html
-echo "Holberton School" | sudo tee /var/www/html/index.html
-
-# Set correct permissions
-sudo chmod 644 /var/www/html/index.html
-sudo chown www-data:www-data /var/www/html/index.html
-
-# Remove default Nginx page if it exists
-sudo rm -f /var/www/html/index.nginx-debian.html
-
-# Restart Nginx to apply changes
-sudo service nginx restart
-
+sudo apt-get install -y nginx
+sudo chown -R ubuntu /var/www
+echo "Holberton School" > /var/www/html/index.nginx-debian.html
+sudo service nginx start
