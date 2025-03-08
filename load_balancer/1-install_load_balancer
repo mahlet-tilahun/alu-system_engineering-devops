@@ -1,24 +1,22 @@
 #!/usr/bin/env bash
 # Script that configures a load balancer for Ubuntu 20.04
-sudo apt-get update
+sudo apt-get -y update
+sudo apt-get -y upgrade
+sudo apt-get -y install haproxy
 
-# Install HAProxy
-sudo apt-get install -y haproxy
+sudo chown -R ubuntu /etc/haproxy
 
-# Configure HAProxy for load balancing with round-robin
-sudo bash -c 'cat > /etc/haproxy/haproxy.cfg << EOF
-frontend http_front
-    bind *:80
-    default_backend http_back
+configuration="\
+frontend http
+        bind *:80
+        mode http
+        default_backend web-server
+backend web-server
+        balance roundrobin
+        server 3848-web-01 52.91.14.9:80 check
+        server 3848-web-02 54.196.81.191:80 check
+        
+"
 
-backend http_back
-    balance roundrobin
-    server web-01 52.91.14.9:80 check
-    server web-02 54.196.81.191:80 check
-EOF'
-
-# Enable HAProxy to start on boot
-sudo systemctl enable haproxy
-
-# Start HAProxy service
-sudo systemctl start haproxy
+sudo echo "$configuration" >> /etc/haproxy/haproxy.cfg
+sudo service haproxy restart
